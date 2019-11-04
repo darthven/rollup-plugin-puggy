@@ -1,0 +1,7 @@
+src1/
+src2/
+dist
+dist1/
+dist2/
+node_modules/
+bundle.js

@@ -1,0 +1,25 @@
+{
+  "name": "rollup-plugin-puggy",
+  "version": "0.0.2",
+  "description": "Plugin for transforming Pug files into HTML ones",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "rollup-plugin",
+    "pug"
+  ],
+  "author": "darthvenus",
+  "license": "ISC",
+  "dependencies": {
+    "pug": "^2.0.4"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.4",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.12.5",
+    "@types/pug": "^2.0.4",
+    "@types/rollup": "^0.54.0"
+  }
+}
