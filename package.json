@@ -4,7 +4,11 @@
   "description": "Plugin for transforming Pug files into HTML ones",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:single": "rollup -c test/configs/rollup.single.config.js",
+    "test:single-advanced": "rollup -c test/configs/rollup.single-advanced.config.js",
+    "test:multiple": "rollup -c test/configs/rollup.multiple.config.js",
+    "test:multiple-advanced": "rollup -c test/configs/rollup.multiple-advanced.config.js"
   },
   "keywords": [
     "rollup-plugin",
@@ -16,7 +20,7 @@
     "pug": "^2.0.4"
   },
   "devDependencies": {
-    "@types/chai": "^4.2.4",
+    "@types/chai": "^4.2.5",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.5",
     "@types/pug": "^2.0.4",

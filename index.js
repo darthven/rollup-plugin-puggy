@@ -10,11 +10,10 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -45,8 +44,45 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readdirSync, unlinkSync, writeFileSync } from 'fs';
 import { compileFile } from 'pug';
+import { isArray } from 'util';
+function preComplile(input, output) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _i, _a, file;
+        return __generator(this, function (_b) {
+            if (existsSync(input)) {
+                if (existsSync(output)) {
+                    for (_i = 0, _a = readdirSync(output); _i < _a.length; _i++) {
+                        file = _a[_i];
+                        unlinkSync(output + "/" + file);
+                    }
+                }
+                else {
+                    mkdirSync(output);
+                }
+            }
+            return [2 /*return*/];
+        });
+    });
+}
+function preComplileAdvanced(input, output) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _i, input_1, ins;
+        return __generator(this, function (_a) {
+            if (isArray(input)) {
+                for (_i = 0, input_1 = input; _i < input_1.length; _i++) {
+                    ins = input_1[_i];
+                    preComplile(ins, output);
+                }
+            }
+            else {
+                preComplile(input, output);
+            }
+            return [2 /*return*/];
+        });
+    });
+}
 function createBundle(_a) {
     var input = _a.input, output = _a.output, pugOptions = _a.pugOptions, locals = _a.locals;
     return __awaiter(this, void 0, void 0, function () {
@@ -54,8 +90,25 @@ function createBundle(_a) {
         return __generator(this, function (_c) {
             for (_i = 0, _b = readdirSync(input); _i < _b.length; _i++) {
                 file = _b[_i];
-                console.log('FILE', file);
                 writeFileSync(output + "/" + file.replace('pug', 'html'), compileFile(input + "/" + file, pugOptions)(locals));
+            }
+            return [2 /*return*/];
+        });
+    });
+}
+function createBundleAdvanced(_a) {
+    var input = _a.input, output = _a.output, pugOptions = _a.pugOptions, locals = _a.locals;
+    return __awaiter(this, void 0, void 0, function () {
+        var _i, input_2, ins;
+        return __generator(this, function (_b) {
+            if (isArray(input)) {
+                for (_i = 0, input_2 = input; _i < input_2.length; _i++) {
+                    ins = input_2[_i];
+                    createBundle({ input: ins, output: output, pugOptions: pugOptions, locals: locals });
+                }
+            }
+            else {
+                createBundle({ input: input, output: output, pugOptions: pugOptions, locals: locals });
             }
             return [2 /*return*/];
         });
@@ -68,23 +121,24 @@ function createMultipleBundles(_a) {
         return __generator(this, function (_c) {
             for (_i = 0, _b = multipleBundles; _i < _b.length; _i++) {
                 bundle = _b[_i];
-                createBundle(__assign(__assign({}, bundle), { pugOptions: pugOptions }));
+                createBundleAdvanced(__assign({}, bundle, { pugOptions: pugOptions }));
             }
             return [2 /*return*/];
         });
     });
 }
 export default function puggy(options) {
-    var input = options.input, output = options.output, multipleBundles = options.multipleBundles, pugOptions = options.pugOptions;
-    if (existsSync(input)) {
-        mkdirSync(output);
-        if (multipleBundles) {
-            console.log(111);
-            createMultipleBundles({ multipleBundles: multipleBundles, pugOptions: pugOptions });
+    var multipleBundles = options.multipleBundles;
+    if (multipleBundles) {
+        for (var _i = 0, multipleBundles_1 = multipleBundles; _i < multipleBundles_1.length; _i++) {
+            var bundle = multipleBundles_1[_i];
+            preComplileAdvanced(bundle.input, bundle.output);
         }
-        else {
-            createBundle(options);
-        }
+        createMultipleBundles(options);
+    }
+    else {
+        preComplileAdvanced(options.input, options.output);
+        createBundleAdvanced(options);
     }
     return {
         name: 'rollup-plugin-puggy'
